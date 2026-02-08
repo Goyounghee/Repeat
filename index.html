@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repeat</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Repeat - 에셋 스토어</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel CDN (for JSX) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -23,7 +19,6 @@
             color: #1d1d1f;
         }
 
-        /* --- 애니메이션 정의 --- */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
@@ -58,10 +53,8 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- Utility ---
         const formatPrice = (price) => price.toLocaleString('ko-KR');
 
-        // --- Intersection Observer Hook ---
         const useReveal = () => {
             const ref = useRef(null);
             useEffect(() => {
@@ -79,7 +72,6 @@
             return ref;
         };
 
-        // --- Data ---
         const PRODUCTS = [
             { id: 1, title: "채팅 시스템 Pro", category: "시스템", price: 50000, image: "bg-gradient-to-tr from-blue-400 to-indigo-500", badge: "New", description: "로블록스의 검열 정책을 고려한 최적의 채팅 솔루션입니다. 실시간 번역 및 필터링 기능을 포함합니다.", features: ["실시간 필터링", "모바일 최적화", "커스텀 테마 지원"] },
             { id: 2, title: "현대식 가구 모델", category: "모델", price: 85000, image: "bg-gradient-to-br from-orange-300 to-rose-400", badge: "Best Seller", description: "현대적인 생활관 및 사무실 모델링을 위한 포괄적인 디자인 시스템.", features: ["4K 텍스처", "로우 폴리 최적화", "PBR 렌더링"] },
@@ -91,7 +83,6 @@
             { id: 8, title: "정밀 구조 3D", category: "모델", price: 99000, image: "bg-gradient-to-bl from-red-400 to-orange-500", badge: "", description: "건축 및 구조 설계를 위한 정밀 3D 모델 패키지.", features: ["CAD 연동", "모듈형 설계", "정밀 치수 반영"] }
         ];
 
-        // --- Components ---
         const Button = ({ children, variant = 'primary', className = '', onClick }) => {
             const baseStyle = "px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2";
             const variants = {
@@ -107,7 +98,7 @@
             );
         };
 
-        const Navbar = ({ activePage, setActivePage, clearSelection }) => {
+        const Navbar = ({ activePage, navigateTo }) => {
             const [scrolled, setScrolled] = useState(false);
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -123,26 +114,20 @@
                 { name: '빌드', id: '빌드' }, { name: '기타', id: '기타' },
             ];
 
-            const handleLogoClick = () => {
-                clearSelection();
-                setActivePage('home');
-                window.scrollTo(0,0);
-            };
-
             return (
                 <>
                     <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
                         scrolled ? 'bg-white/70 backdrop-blur-xl border-b border-gray-200/50' : 'bg-transparent'
                     }`}>
                         <div className="max-w-[1024px] mx-auto px-4 h-12 flex items-center justify-between text-xs font-light text-gray-800">
-                            <button onClick={handleLogoClick} className="p-2 hover:opacity-70 transition-opacity text-black">
+                            <button onClick={() => navigateTo('home')} className="p-2 hover:opacity-70 transition-opacity text-black">
                                 <i data-lucide="command" className="w-[18px] h-[18px]"></i>
                             </button>
                             <div className="hidden md:flex gap-8">
                                 {navLinks.map((link) => (
                                     <button 
                                         key={link.id}
-                                        onClick={() => { clearSelection(); setActivePage(link.id); window.scrollTo(0,0); }}
+                                        onClick={() => navigateTo(link.id)}
                                         className={`hover:text-black transition-colors ${activePage === link.id ? 'text-black font-medium' : 'text-gray-600'}`}
                                     >
                                         {link.name}
@@ -160,9 +145,9 @@
                         <div className="fixed inset-0 z-[60] bg-white flex flex-col p-6 animate-in slide-in-from-top-10 duration-300">
                             <div className="flex justify-end mb-8"><button onClick={() => setMobileMenuOpen(false)}><i data-lucide="x" className="w-[24px] h-[24px]"></i></button></div>
                             <div className="flex flex-col gap-6 text-2xl font-semibold text-gray-900">
-                                <button onClick={() => { handleLogoClick(); setMobileMenuOpen(false); }} className="text-left">Home</button>
+                                <button onClick={() => { navigateTo('home'); setMobileMenuOpen(false); }} className="text-left">Home</button>
                                 {navLinks.map((link) => (
-                                    <button key={link.id} onClick={() => { clearSelection(); setActivePage(link.id); setMobileMenuOpen(false); window.scrollTo(0,0); }} className={`text-left ${activePage === link.id ? 'text-black' : 'text-gray-400'}`}>{link.name}</button>
+                                    <button key={link.id} onClick={() => { navigateTo(link.id); setMobileMenuOpen(false); }} className={`text-left ${activePage === link.id ? 'text-black' : 'text-gray-400'}`}>{link.name}</button>
                                 ))}
                             </div>
                         </div>
@@ -186,8 +171,8 @@
                             당신의 개발 속도를 가속화하세요.
                         </p>
                         <div className="flex gap-4 items-center delay-200">
-                            <Button onClick={onShopNow} variant="primary">추천 상품 확인하기</Button>
-                            <Button onClick={onShopNow} variant="ghost">전체 상품 구경하기 <i data-lucide="chevron-right" className="w-[14px] h-[14px]"></i></Button>
+                            <Button onClick={() => onShopNow('시스템')} variant="primary">추천 상품 확인하기</Button>
+                            <Button onClick={() => onShopNow('시스템')} variant="ghost">전체 상품 구경하기 <i data-lucide="chevron-right" className="w-[14px] h-[14px]"></i></Button>
                         </div>
                     </div>
                 </div>
@@ -275,20 +260,15 @@
                 window.scrollTo(0, 0);
                 window.lucide.createIcons();
             }, []);
-
             const revealRef = useReveal();
             const featureRef = useReveal();
-
             return (
                 <div className="pt-24 pb-32 animate-in fade-in duration-700">
-                    {/* Header/Back Button */}
                     <div className="max-w-[1024px] mx-auto px-4 mb-8">
                         <button onClick={onBack} className="text-[#0066cc] hover:underline flex items-center gap-1 text-sm">
                             <i data-lucide="chevron-left" className="w-4 h-4"></i> 뒤로가기
                         </button>
                     </div>
-
-                    {/* Hero Section */}
                     <div className="max-w-[1024px] mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-24">
                         <div ref={revealRef} className="reveal">
                             <p className="text-[#bf4800] font-semibold uppercase tracking-widest text-xs mb-4">{product.category}</p>
@@ -306,8 +286,6 @@
                              </div>
                         </div>
                     </div>
-
-                    {/* Features Grid */}
                     <div className="bg-[#f5f5f7] py-24">
                         <div className="max-w-[1024px] mx-auto px-4">
                             <div ref={featureRef} className="reveal mb-12">
@@ -320,20 +298,11 @@
                                             <i data-lucide="check-circle" className="w-6 h-6"></i>
                                         </div>
                                         <h4 className="text-xl font-bold mb-2">{feature}</h4>
-                                        <p className="text-gray-500 text-sm">해당 분야의 최고 전문가들이 검수하고 최적화한 {product.title}만의 독보적인 기능입니다.</p>
+                                        <p className="text-gray-500 text-sm">전문가들이 최적화한 {product.title}만의 독보적인 기능입니다.</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    </div>
-
-                    {/* Floating Purchase Bar (Mobile) */}
-                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-gray-200 md:hidden z-40 flex justify-between items-center animate-in slide-in-from-bottom-full duration-500">
-                        <div>
-                            <p className="text-[10px] text-gray-500 font-medium">{product.title}</p>
-                            <p className="text-sm font-bold">₩{formatPrice(product.price)}</p>
-                        </div>
-                        <Button className="px-6 py-2">구매</Button>
                     </div>
                 </div>
             );
@@ -371,17 +340,44 @@
         };
 
         function App() {
-            const [activePage, setActivePage] = useState('home');
+            // URL Hash에서 초기 상태 로드
+            const getInitialPage = () => {
+                const hash = window.location.hash.replace('#', '');
+                return hash && ['시스템', '모델', '빌드', '기타', 'home'].includes(decodeURIComponent(hash)) 
+                    ? decodeURIComponent(hash) 
+                    : 'home';
+            };
+
+            const [activePage, setActivePage] = useState(getInitialPage());
             const [selectedProduct, setSelectedProduct] = useState(null);
 
-            useEffect(() => { window.lucide.createIcons(); }, [activePage, selectedProduct]);
+            // 상태 변경 시 URL Hash 업데이트 및 스크롤 상단 이동
+            const navigateTo = (pageId) => {
+                setSelectedProduct(null);
+                setActivePage(pageId);
+                window.location.hash = pageId === 'home' ? '' : pageId;
+                window.scrollTo(0, 0);
+            };
+
+            // 브라우저 뒤로가기/앞으로가기 시 Hash 감지
+            useEffect(() => {
+                const handleHashChange = () => {
+                    setActivePage(getInitialPage());
+                    setSelectedProduct(null);
+                };
+                window.addEventListener('hashchange', handleHashChange);
+                return () => window.removeEventListener('hashchange', handleHashChange);
+            }, []);
+
+            useEffect(() => { 
+                window.lucide.createIcons(); 
+            }, [activePage, selectedProduct]);
 
             return (
                 <div className="min-h-screen flex flex-col">
                     <Navbar 
                         activePage={activePage} 
-                        setActivePage={setActivePage} 
-                        clearSelection={() => setSelectedProduct(null)} 
+                        navigateTo={navigateTo}
                     />
                     
                     <main className="flex-grow">
@@ -392,8 +388,8 @@
                             />
                         ) : activePage === 'home' ? (
                             <>
-                                <Hero onShopNow={() => setActivePage('시스템')} />
-                                <BentoGrid onCategoryClick={(cat) => setActivePage(cat)} />
+                                <Hero onShopNow={navigateTo} />
+                                <BentoGrid onCategoryClick={navigateTo} />
                                 <div className="py-20 text-center bg-white border-t border-gray-100">
                                     <p className="text-3xl md:text-4xl font-semibold mb-6">어떤 환경이든, 완벽하게.</p>
                                     <div className="flex justify-center gap-8 text-gray-400">
